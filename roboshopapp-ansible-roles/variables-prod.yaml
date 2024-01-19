@@ -1,0 +1,10 @@
+MONGODB_HOST: mongodb-prod.roboshopapp.website
+REDIS_HOST: redis-prod.roboshopapp.website
+MYSQL_HOST: mysql-prod.roboshopapp.website
+RABBITMQ_HOST: rabbitmq-prod.roboshopapp.website
+CATALOGUE_HOST: catalogue-prod.roboshopapp.website
+USER_HOST: user-prod.roboshopapp.website
+CART_HOST: cart-prod.roboshopapp.website
+SHIPPING_HOST: shipping-prod.roboshopapp.website
+PAYMENT_HOST: payment-prod.roboshopapp.website
+DISPATCH_HOST: dispatch-prod.roboshopapp.website

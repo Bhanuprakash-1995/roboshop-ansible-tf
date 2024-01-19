@@ -1,0 +1,46 @@
+- hosts: localhost
+  gather_facts: True
+  become: yes
+  vars:
+    AMI_ID: ami-03265a0778a880afb
+    SECURITY_GP: sg-0170a2c37d33656c2
+    INSTANCE_TYPE: t2.micro
+    REGION: us-east-1
+    ZONE: roboshopapp.website
+  tasks:
+    - name: Start instances
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        instance_type: "{{ 't3.medium' if item in ['mongodb', 'mysql', 'shipping'] else INSTANCE_TYPE }}"
+        security_group: "{{ SECURITY_GP }}"
+        image_id: "{{ AMI_ID }}"
+        tags:
+          Environment: "{{ item }}"
+        exact_count: 1
+        region: "{{ REGION }}"
+        wait: true
+      loop:
+        - mongodb
+        - catalogue
+        - redis
+        - user
+        - cart
+        - mysql
+        - shipping
+        - rabbitmq
+        - payment
+        - dispatch
+        - web
+      register: ec2_instances
+
+    - name: Create Route 53 DNS records for 'mongodb' and 'redis' instances
+      route53:
+        command: create
+        zone: "{{ ZONE }}"
+        record: "{{ item.item + '.' + ZONE }}"
+        type: A
+        ttl: 1 # Adjust TTL as needed
+        value: "{{ item.instances[0].private_ip_address }}" # Use private_ip_address for DNS record
+      loop: "{{ ec2_instances.results }}"
+      when:
+        - item.item in ['mongodb', 'redis', 'catalogue', 'user', 'cart', 'mysql', 'shipping', 'rabbitmq', 'payment', 'dispatch', 'web']

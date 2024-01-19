@@ -1,0 +1,13 @@
+- name: Install golang
+  ansible.builtin.package:
+    name: golang
+    state: present
+
+- name: Initialize Go module named dispatch
+  ansible.builtin.command: "{{item}}"
+  loop:
+    - go mod init dispatch
+    - go get
+    - go build
+  args:
+    chdir: /app
